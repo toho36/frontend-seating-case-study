@@ -1,10 +1,10 @@
-import { Seat } from '@/components/Seat.tsx';
+import { Seat } from "@/components/Seat.tsx";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/components/ui/avatar.tsx';
-import { Button } from '@/components/ui/button.tsx';
+} from "@/components/ui/avatar.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,27 +13,39 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu.tsx';
-import './App.css';
-import { useQuery } from 'react-query';
-import { fetchEventDetails, fetchEventTickets } from './lib/api';
-import { EventDetails, EventTickets } from './lib/api';
+} from "@/components/ui/dropdown-menu.tsx";
+import "./App.css";
+import { useQuery } from "react-query";
+import { fetchEventDetails, fetchEventTickets } from "./lib/api";
+import { EventDetails, EventTickets } from "./lib/api";
+import { useState } from "react";
 function App() {
+  interface CartItem {
+    isInCart: boolean;
+    seatId?: string;
+  }
+  interface SeatInfo {
+    seatId: string;
+    place: number;
+    ticketTypeId: string;
+  }
+
   const isLoggedIn = true;
+  const [cart, setCart] = useState<CartItem[]>([]); // State to track seats in the cart
 
   const {
     data: eventDetails,
     isLoading,
     error,
-  } = useQuery<EventDetails>('eventDetails', fetchEventDetails);
+  } = useQuery<EventDetails>("eventDetails", fetchEventDetails);
 
   const {
     data: eventTickets,
     isLoading: isTicketsLoading,
     error: ticketsError,
   } = useQuery<EventTickets>(
-    ['eventTickets', eventDetails?.eventId || ''],
-    () => fetchEventTickets(eventDetails?.eventId || ''),
+    ["eventTickets", eventDetails?.eventId || ""],
+    () => fetchEventTickets(eventDetails?.eventId || ""),
     {
       enabled: !!eventDetails,
       staleTime: Infinity, // Add this line
@@ -50,6 +62,23 @@ function App() {
     return <div>Loading...</div>;
   }
   console.log(sortedSeatRows);
+  // Function to handle adding/removing seats from cart
+  const handleCartChange = (seat: SeatInfo | undefined, add: boolean) => {
+    if (!seat) return; // Handle the case where seat is undefined
+
+    setCart((prev) => {
+      if (add) {
+        // Assuming you need to convert SeatInfo to CartItem when adding to cart
+        const newCartItem: CartItem = { isInCart: true, seatId: seat.seatId };
+        return [...prev, newCartItem];
+      } else {
+        return prev.filter((s) => s.seatId !== seat.seatId);
+      }
+    });
+  };
+
+  // Calculate total price
+  const totalPrice = cart.length * 50;
   return (
     <div className="flex flex-col grow">
       {/* header (wrapper) */}
@@ -122,28 +151,19 @@ function App() {
                   const seat = seatRow?.seats.find(
                     (seat) => seat.place === placeIndex + 1
                   );
-                  if (seat) {
-                    return (
-                      <Seat
-                        key={seat.seatId}
-                        seat={seat}
-                        className="not-available"
-                        status="available"
-                        place={placeIndex + 1}
-                        row={rowIndex + 1}
-                      />
-                    ); // Available seat
-                  } else {
-                    return (
-                      <Seat
-                        key={`${rowIndex}-${placeIndex}`}
-                        seat={seat}
-                        status="not-available"
-                        place={placeIndex + 1}
-                        row={rowIndex + 1}
-                      />
-                    ); // Not available seat
-                  }
+                  const isInCart = cart.some((s) => s.seatId === seat?.seatId);
+                  return (
+                    <Seat
+                      key={seat?.seatId || `${rowIndex}-${placeIndex}`}
+                      seat={seat}
+                      className="not-available"
+                      status={seat ? "available" : "not-available"}
+                      place={placeIndex + 1}
+                      row={rowIndex + 1}
+                      isInCart={isInCart}
+                      onCartChange={handleCartChange}
+                    />
+                  );
                 })}
                 <div className=" text-zinc-400 font-medium pl-3">
                   {rowIndex + 1}
@@ -180,8 +200,12 @@ function App() {
         <div className="max-w-screen-lg p-6 flex justify-between items-center gap-4 grow">
           {/* total in cart state */}
           <div className="flex flex-col">
-            <span>Total for [?] tickets</span>
-            <span className="text-2xl font-semibold">[?] CZK</span>
+            <span className="text-xl text-zinc-900 font-semibold">
+              Total for {cart.length} tickets
+            </span>
+            <span className="text-xl text-zinc-900 font-semibold">
+              {totalPrice} CZK
+            </span>
           </div>
 
           {/* checkout button */}
