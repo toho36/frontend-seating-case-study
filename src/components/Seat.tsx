@@ -16,11 +16,15 @@ interface SeatProps extends React.HTMLAttributes<HTMLElement> {
   status: 'available' | 'not-available';
   place: number;
   className?: string;
+  row: number;
 }
 
 export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
   (props, ref) => {
     const isInCart = true;
+    const seatRow = props.row; // Access seat from props
+    const Place = props.seat?.place; // Access seat from props
+
     const { status, place } = props;
     const color = status === 'available' ? 'lightgreen' : 'lightgrey';
     return (
@@ -34,24 +38,26 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
             style={{ backgroundColor: color }}
             ref={ref}
           >
-            <span className="text-xs text-zinc-400 font-medium">{place}</span>
+            <span className="text-xs text-white-400 font-medium">{place}</span>
           </div>
         </PopoverTrigger>
-        <PopoverContent>
-          <pre>{JSON.stringify({ seatData: null }, null, 2)}</pre>
+        {status === 'available' && (
+          <PopoverContent>
+            <pre>{JSON.stringify({ seatRow, Place }, null, 2)}</pre>
 
-          <footer className="flex flex-col">
-            {isInCart ? (
-              <Button disabled variant="destructive" size="sm">
-                Remove from cart
-              </Button>
-            ) : (
-              <Button disabled variant="default" size="sm">
-                Add to cart
-              </Button>
-            )}
-          </footer>
-        </PopoverContent>
+            <footer className="flex flex-col">
+              {isInCart ? (
+                <Button disabled variant="destructive" size="sm">
+                  Remove from cart
+                </Button>
+              ) : (
+                <Button disabled variant="default" size="sm">
+                  Add to cart
+                </Button>
+              )}
+            </footer>
+          </PopoverContent>
+        )}
       </Popover>
     );
   }

@@ -112,6 +112,9 @@ function App() {
             {/*	seating map */}
             {Array.from({ length: 15 }).map((_, rowIndex) => (
               <div key={rowIndex} className="seat-row flex m-auto p-1 gap-2">
+                <div className=" text-zinc-400 font-medium pr-3">
+                  {rowIndex + 1}
+                </div>
                 {Array.from({ length: 16 }).map((_, placeIndex) => {
                   const seatRow = sortedSeatRows?.find(
                     (row) => row.seatRow === rowIndex + 1
@@ -127,6 +130,7 @@ function App() {
                         className="not-available"
                         status="available"
                         place={placeIndex + 1}
+                        row={rowIndex + 1}
                       />
                     ); // Available seat
                   } else {
@@ -136,10 +140,14 @@ function App() {
                         seat={seat}
                         status="not-available"
                         place={placeIndex + 1}
+                        row={rowIndex + 1}
                       />
                     ); // Not available seat
                   }
                 })}
+                <div className=" text-zinc-400 font-medium pl-3">
+                  {rowIndex + 1}
+                </div>
               </div>
             ))}
           </div>
