@@ -76,6 +76,14 @@ function App() {
       }
     });
   };
+  // Calculate the maximum number of rows and places
+  const maxRows =
+    sortedSeatRows?.reduce((max, row) => Math.max(max, row.seatRow), 0) || 0;
+  const maxPlaces =
+    sortedSeatRows?.reduce(
+      (max, row) => Math.max(max, ...row.seats.map((seat) => seat.place)),
+      0
+    ) || 0;
 
   // Calculate total price
   const totalPrice = cart.length * 50;
@@ -139,12 +147,12 @@ function App() {
           {/* seating card */}
           <div className="bg-white rounded-md grow p-4 shadow-sm flex flex-col">
             {/*	seating map */}
-            {Array.from({ length: 15 }).map((_, rowIndex) => (
+            {Array.from({ length: maxRows }).map((_, rowIndex) => (
               <div key={rowIndex} className="seat-row flex m-auto p-1 gap-2">
-                <div className=" text-zinc-400 font-medium pr-3">
+                <div className="text-zinc-400 font-medium pr-3">
                   {rowIndex + 1}
                 </div>
-                {Array.from({ length: 16 }).map((_, placeIndex) => {
+                {Array.from({ length: maxPlaces }).map((_, placeIndex) => {
                   const seatRow = sortedSeatRows?.find(
                     (row) => row.seatRow === rowIndex + 1
                   );
