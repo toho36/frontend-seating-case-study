@@ -8,17 +8,21 @@ import { cn } from '@/lib/utils.ts';
 import React from 'react';
 
 interface SeatProps extends React.HTMLAttributes<HTMLElement> {
-  seat: {
+  seat?: {
     seatId: string;
     place: number;
     ticketTypeId: string;
   };
+  status: 'available' | 'not-available';
+  place: number;
   className?: string;
 }
 
 export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
   (props, ref) => {
     const isInCart = true;
+    const { status, place } = props;
+    const color = status === 'available' ? 'lightgreen' : 'lightgrey';
     return (
       <Popover>
         <PopoverTrigger>
@@ -27,9 +31,10 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
               'size-8 rounded-full bg-zinc-100 hover:bg-zinc-200 transition-color',
               props.className
             )}
+            style={{ backgroundColor: color }}
             ref={ref}
           >
-            <span className="text-xs text-zinc-400 font-medium">[n]</span>
+            <span className="text-xs text-zinc-400 font-medium">{place}</span>
           </div>
         </PopoverTrigger>
         <PopoverContent>

@@ -34,7 +34,10 @@ function App() {
   } = useQuery<EventTickets>(
     ['eventTickets', eventDetails?.eventId || ''],
     () => fetchEventTickets(eventDetails?.eventId || ''),
-    { enabled: !!eventDetails }
+    {
+      enabled: !!eventDetails,
+      staleTime: Infinity, // Add this line
+    }
   );
 
   const sortedSeatRows = eventTickets?.seatRows.sort(
@@ -105,11 +108,11 @@ function App() {
 
         <div className="max-w-screen-lg m-auto p-4 flex items-start grow gap-3 w-full">
           {/* seating card */}
-          <div className="bg-white rounded-md grow p-3 self-stretch shadow-sm flex flex-col">
+          <div className="bg-white rounded-md grow p-4 shadow-sm flex flex-col">
             {/*	seating map */}
-            {Array.from({ length: 10 }).map((_, rowIndex) => (
-              <div key={rowIndex} className="seat-row flex">
-                {Array.from({ length: 13 }).map((_, placeIndex) => {
+            {Array.from({ length: 15 }).map((_, rowIndex) => (
+              <div key={rowIndex} className="seat-row flex m-auto p-1 gap-2">
+                {Array.from({ length: 16 }).map((_, placeIndex) => {
                   const seatRow = sortedSeatRows?.find(
                     (row) => row.seatRow === rowIndex + 1
                   );
@@ -118,25 +121,21 @@ function App() {
                   );
                   if (seat) {
                     return (
-                      <>
-                        <p>test</p>
-                        <Seat
-                          key={seat.seatId}
-                          seat={seat}
-                          className="available"
-                        />
-                      </>
+                      <Seat
+                        key={seat.seatId}
+                        seat={seat}
+                        className="not-available"
+                        status="available"
+                        place={placeIndex + 1}
+                      />
                     ); // Available seat
                   } else {
                     return (
-                      <div
+                      <Seat
                         key={`${rowIndex}-${placeIndex}`}
-                        className="seat not-available"
-                        style={{
-                          backgroundColor: 'red',
-                          width: '40px',
-                          height: '40px',
-                        }}
+                        seat={seat}
+                        status="not-available"
+                        place={placeIndex + 1}
                       />
                     ); // Not available seat
                   }
