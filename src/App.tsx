@@ -19,18 +19,27 @@ import { useQuery } from "react-query";
 import { fetchEventDetails, fetchEventTickets } from "./lib/api";
 import { EventDetails, EventTickets } from "./lib/api";
 import { useState } from "react";
-function App() {
-  interface CartItem {
-    isInCart: boolean;
-    seatId?: string;
-  }
-  interface SeatInfo {
-    seatId: string;
-    place: number;
-    ticketTypeId: string;
-  }
+import LoginModal from "./components/login"; // Import the LoginModal component
 
-  const isLoggedIn = true;
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+interface CartItem {
+  isInCart: boolean;
+  seatId?: string;
+}
+interface SeatInfo {
+  seatId: string;
+  place: number;
+  ticketTypeId: string;
+}
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
+  const [showLoginModal, setShowLoginModal] = useState(false); // State to manage login modal visibility
+  const [user, setUser] = useState<User | null>(null); // State to store user data
+
   const [cart, setCart] = useState<CartItem[]>([]); // State to track seats in the cart
 
   const {
@@ -58,6 +67,17 @@ function App() {
   sortedSeatRows?.forEach((row) => {
     row.seats.sort((a, b) => a.place - b.place);
   });
+  // Function to toggle the login modal
+  const toggleLoginModal = () => setShowLoginModal(!showLoginModal);
+
+  // Function to handle successful login
+  const handleLoginSuccess = (user: User) => {
+    setIsLoggedIn(true);
+    setUser(user);
+    setShowLoginModal(false);
+    console.log("Logged in as:", user);
+  };
+
   if (isTicketsLoading) {
     return <div>Loading...</div>;
   }
@@ -101,37 +121,44 @@ function App() {
           <div className="bg-zinc-100 rounded-md h-8 w-[200px]" />
           {/* user menu */}
           <div className="max-w-[250px] w-full flex justify-end">
-            {isLoggedIn ? (
+            {isLoggedIn && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost">
                     <div className="flex items-center gap-2">
                       <Avatar>
                         <AvatarImage
-                          src={`https://source.boringavatars.com/marble/120/<user-email>?colors=25106C,7F46DB`}
+                          src={`https://source.boringavatars.com/marble/120/${user.email}?colors=25106C,7F46DB`}
                         />
-                        <AvatarFallback>CN</AvatarFallback>
+                        <AvatarFallback>
+                          {user.firstName[0] + user.lastName[0]}
+                        </AvatarFallback>
                       </Avatar>
-
                       <div className="flex flex-col text-left">
-                        <span className="text-sm font-medium">John Doe</span>
+                        <span className="text-sm font-medium">
+                          {user.firstName} {user.lastName}
+                        </span>
                         <span className="text-xs text-zinc-500">
-                          john.doe@nfctron.com
+                          {user.email}
                         </span>
                       </div>
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-[250px]">
-                  <DropdownMenuLabel>John Doe</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    {user.firstName} {user.lastName}
+                  </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem disabled>Logout</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                      Logout
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button disabled variant="secondary">
+              <Button onClick={toggleLoginModal} variant="secondary">
                 Login or register
               </Button>
             )}
@@ -201,6 +228,14 @@ function App() {
           </aside>
         </div>
       </main>
+      {/* Optionally render the LoginModal */}
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={toggleLoginModal}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
 
       {/* bottom cart affix (wrapper) */}
       <nav className="sticky bottom-0 left-0 right-0 bg-white border-t border-zinc-200 flex justify-center">
