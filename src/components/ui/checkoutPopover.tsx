@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button.tsx";
 interface Ticket {
   seatId: string;
   price: number;
+  row: number;
+  place: number;
 }
 
 interface CheckoutPopoverProps {
@@ -41,7 +43,9 @@ const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
               key={ticket.seatId}
               className="flex justify-between items-center p-2 border-b"
             >
-              <span>Seat ID: {ticket.seatId}</span>
+              <span>
+                Row: {ticket.row}, Place: {ticket.place}
+              </span>
               <span>{ticket.price} CZK</span>
               <Button variant="ghost" onClick={() => onRemove(ticket.seatId)}>
                 Remove

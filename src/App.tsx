@@ -30,6 +30,8 @@ interface User {
 interface CartItem {
   isInCart: boolean;
   seatId?: string;
+  row: number; // Added row index
+  place: number;
 }
 interface SeatInfo {
   seatId: string;
@@ -88,13 +90,22 @@ function App() {
   }
   console.log(sortedSeatRows);
   // Function to handle adding/removing seats from cart
-  const handleCartChange = (seat: SeatInfo | undefined, add: boolean) => {
-    if (!seat) return; // Handle the case where seat is undefined
+  const handleCartChange = (
+    seat: SeatInfo | undefined,
+    add: boolean,
+    row: number,
+    place: number
+  ) => {
+    if (!seat) return;
 
     setCart((prev) => {
       if (add) {
-        // Assuming you need to convert SeatInfo to CartItem when adding to cart
-        const newCartItem: CartItem = { isInCart: true, seatId: seat.seatId };
+        const newCartItem: CartItem = {
+          isInCart: true,
+          seatId: seat.seatId,
+          row,
+          place,
+        };
         return [...prev, newCartItem];
       } else {
         return prev.filter((s) => s.seatId !== seat.seatId);
@@ -201,7 +212,14 @@ function App() {
                       place={placeIndex + 1}
                       row={rowIndex + 1}
                       isInCart={isInCart}
-                      onCartChange={handleCartChange}
+                      onCartChange={(seatInfo, add) =>
+                        handleCartChange(
+                          seatInfo,
+                          add,
+                          rowIndex + 1,
+                          placeIndex + 1
+                        )
+                      }
                     />
                   );
                 })}
@@ -243,12 +261,12 @@ function App() {
       )}
       <CheckoutPopover
         isOpen={showCheckout}
-        tickets={cart
-          .filter((item) => item.seatId !== undefined)
-          .map((item) => ({
-            seatId: item.seatId as string, // TypeScript type assertion, safe due to the filter
-            price: 50, // Assuming each ticket has a fixed price of 50 CZK
-          }))}
+        tickets={cart.map((item) => ({
+          seatId: item.seatId as string,
+          price: 50,
+          row: item.row,
+          place: item.place,
+        }))}
         onRemove={handleRemoveTicket}
         onClose={() => setShowCheckout(false)}
       />
