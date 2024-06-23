@@ -32,34 +32,37 @@ const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
 
   return (
     <Popover open={isOpen} onOpenChange={onClose}>
-      <PopoverTrigger asChild>
-        <Button variant="default">Checkout Now</Button>
+      <PopoverTrigger>
+        <PopoverContent className="p-2 bg-white rounded-md shadow-lg">
+          <h3 className="text-lg font-semibold p-2">Your Tickets</h3>
+          <ul>
+            {tickets.map((ticket) => (
+              <li
+                key={ticket.seatId}
+                className="flex justify-between items-center p-2 border-b"
+              >
+                <span>
+                  Row: {ticket.row}, Place: {ticket.place}
+                </span>
+                <span>{ticket.price} CZK</span>
+                <Button variant="ghost" onClick={() => onRemove(ticket.seatId)}>
+                  Remove
+                </Button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 p-2">
+            <strong>Total Cost:</strong> {totalCost} CZK
+            <div className="flex justify-end mt-2">
+              <Button variant="default">Buy Tickets</Button>
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-2">
+            <Button onClick={onClose}>Close</Button>
+          </div>
+        </PopoverContent>
       </PopoverTrigger>
-      <PopoverContent className="p-4 bg-white rounded-md shadow-lg">
-        <h3 className="text-lg font-semibold">Your Tickets</h3>
-        <ul>
-          {tickets.map((ticket) => (
-            <li
-              key={ticket.seatId}
-              className="flex justify-between items-center p-2 border-b"
-            >
-              <span>
-                Row: {ticket.row}, Place: {ticket.place}
-              </span>
-              <span>{ticket.price} CZK</span>
-              <Button variant="ghost" onClick={() => onRemove(ticket.seatId)}>
-                Remove
-              </Button>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-4 p-2">
-          <strong>Total Cost:</strong> {totalCost} CZK
-        </div>
-        <div className="flex justify-end mt-2">
-          <Button onClick={onClose}>Close</Button>
-        </div>
-      </PopoverContent>
     </Popover>
   );
 };
