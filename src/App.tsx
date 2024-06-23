@@ -20,6 +20,7 @@ import { fetchEventDetails, fetchEventTickets } from "./lib/api";
 import { EventDetails, EventTickets } from "./lib/api";
 import { useState } from "react";
 import LoginModal from "./components/login"; // Import the LoginModal component
+import CheckoutPopover from "./components/ui/checkoutPopover";
 
 interface User {
   firstName: string;
@@ -41,7 +42,11 @@ function App() {
   const [user, setUser] = useState<User | null>(null); // State to store user data
 
   const [cart, setCart] = useState<CartItem[]>([]); // State to track seats in the cart
+  const [showCheckout, setShowCheckout] = useState(false);
 
+  const handleRemoveTicket = (seatId: string) => {
+    setCart((prev) => prev.filter((ticket) => ticket.seatId !== seatId));
+  };
   const {
     data: eventDetails,
     isLoading,
@@ -236,7 +241,17 @@ function App() {
           onLoginSuccess={handleLoginSuccess}
         />
       )}
-
+      <CheckoutPopover
+        isOpen={showCheckout}
+        tickets={cart
+          .filter((item) => item.seatId !== undefined)
+          .map((item) => ({
+            seatId: item.seatId as string, // TypeScript type assertion, safe due to the filter
+            price: 50, // Assuming each ticket has a fixed price of 50 CZK
+          }))}
+        onRemove={handleRemoveTicket}
+        onClose={() => setShowCheckout(false)}
+      />
       {/* bottom cart affix (wrapper) */}
       <nav className="sticky bottom-0 left-0 right-0 bg-white border-t border-zinc-200 flex justify-center">
         {/* inner content */}
@@ -252,9 +267,15 @@ function App() {
           </div>
 
           {/* checkout button */}
-          <Button disabled variant="default">
+          <Button
+            onClick={() => setShowCheckout(!showCheckout)}
+            disabled={cart.length === 0}
+            variant="default"
+          >
             Checkout now
           </Button>
+
+          {/* Checkout Popover */}
         </div>
       </nav>
     </div>
