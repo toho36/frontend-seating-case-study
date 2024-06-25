@@ -1,10 +1,10 @@
-import { Seat } from "@/components/Seat.tsx";
+import { Seat } from '@/components/Seat.tsx';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar.tsx";
-import { Button } from "@/components/ui/button.tsx";
+} from '@/components/ui/avatar.tsx';
+import { Button } from '@/components/ui/button.tsx';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +13,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu.tsx";
-import "./App.css";
-import { useQuery } from "react-query";
-import { fetchEventDetails, fetchEventTickets } from "./lib/api";
-import { EventDetails, EventTickets } from "./lib/api";
-import { useState } from "react";
-import LoginModal from "./components/login"; // Import the LoginModal component
-import CheckoutPopover from "./components/ui/checkoutPopover";
+} from '@/components/ui/dropdown-menu.tsx';
+import './App.css';
+import { useQuery } from 'react-query';
+import { fetchEventDetails, fetchEventTickets } from './lib/api';
+import { EventDetails, EventTickets } from './lib/api';
+import { useState } from 'react';
+import LoginModal from './components/login'; // Import the LoginModal component
+import CheckoutPopover from './components/ui/checkoutPopover';
+import GuestCheckoutForm from './components/guestCheckoutForm';
+import ChoicePopover from './components/choicePopOver';
 
 interface User {
   firstName: string;
@@ -46,22 +48,41 @@ function App() {
   const [cart, setCart] = useState<CartItem[]>([]); // State to track seats in the cart
   const [showCheckout, setShowCheckout] = useState(false);
 
+  const [showGuestCheckoutForm, setShowGuestCheckoutForm] = useState(false);
+  const [showChoicePopover, setShowChoicePopover] = useState(false);
+
+  // Function to toggle the login modal
+  const toggleLoginModal = () => setShowLoginModal(!showLoginModal);
+  const toggleChoicePopover = () => setShowChoicePopover(!showChoicePopover);
+  const toggleGuestCheckoutForm = () =>
+    setShowGuestCheckoutForm(!showGuestCheckoutForm);
+
   const handleRemoveTicket = (seatId: string) => {
     setCart((prev) => prev.filter((ticket) => ticket.seatId !== seatId));
   };
+  const handleGuestCheckout = (guestInfo: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  }) => {
+    console.log('Guest Info:', guestInfo); // You can use this info as needed
+    setShowGuestCheckoutForm(false); // Hide guest form
+    setShowCheckout(true); // Show checkout
+  };
+
   const {
     data: eventDetails,
     isLoading,
     error,
-  } = useQuery<EventDetails>("eventDetails", fetchEventDetails);
+  } = useQuery<EventDetails>('eventDetails', fetchEventDetails);
 
   const {
     data: eventTickets,
     isLoading: isTicketsLoading,
     error: ticketsError,
   } = useQuery<EventTickets>(
-    ["eventTickets", eventDetails?.eventId || ""],
-    () => fetchEventTickets(eventDetails?.eventId || ""),
+    ['eventTickets', eventDetails?.eventId || ''],
+    () => fetchEventTickets(eventDetails?.eventId || ''),
     {
       enabled: !!eventDetails,
       staleTime: Infinity, // Add this line
@@ -74,15 +95,13 @@ function App() {
   sortedSeatRows?.forEach((row) => {
     row.seats.sort((a, b) => a.place - b.place);
   });
-  // Function to toggle the login modal
-  const toggleLoginModal = () => setShowLoginModal(!showLoginModal);
 
   // Function to handle successful login
   const handleLoginSuccess = (user: User) => {
     setIsLoggedIn(true);
     setUser(user);
     setShowLoginModal(false);
-    console.log("Logged in as:", user);
+    console.log('Logged in as:', user);
   };
 
   if (isTicketsLoading) {
@@ -208,7 +227,7 @@ function App() {
                       key={seat?.seatId || `${rowIndex}-${placeIndex}`}
                       seat={seat}
                       className="not-available"
-                      status={seat ? "available" : "not-available"}
+                      status={seat ? 'available' : 'not-available'}
                       place={placeIndex + 1}
                       row={rowIndex + 1}
                       isInCart={isInCart}
@@ -251,13 +270,40 @@ function App() {
           </aside>
         </div>
       </main>
+      {showChoicePopover && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <ChoicePopover
+            onLogin={() => {
+              setShowChoicePopover(false);
+              toggleLoginModal(); // Show login modal
+            }}
+            onGuest={() => {
+              setShowChoicePopover(false);
+              setShowGuestCheckoutForm(true); // Show guest checkout form
+            }}
+            isOpen={showChoicePopover}
+            onClose={toggleChoicePopover}
+          />
+        </div>
+      )}
+      {showGuestCheckoutForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <GuestCheckoutForm
+            isOpen={showGuestCheckoutForm}
+            onClose={toggleGuestCheckoutForm}
+            onGuestCheckout={handleGuestCheckout}
+          />
+        </div>
+      )}
       {/* Optionally render the LoginModal */}
       {showLoginModal && (
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={toggleLoginModal}
-          onLoginSuccess={handleLoginSuccess}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <LoginModal
+            isOpen={showLoginModal}
+            onClose={toggleLoginModal}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        </div>
       )}
       <CheckoutPopover
         isOpen={showCheckout}
@@ -270,6 +316,7 @@ function App() {
         onRemove={handleRemoveTicket}
         onClose={() => setShowCheckout(false)}
       />
+
       {/* bottom cart affix (wrapper) */}
       <nav className="sticky bottom-0 left-0 right-0 bg-white border-t border-zinc-200 flex justify-center">
         {/* inner content */}
@@ -286,7 +333,13 @@ function App() {
 
           {/* checkout button */}
           <Button
-            onClick={() => setShowCheckout(!showCheckout)}
+            onClick={() => {
+              if (!isLoggedIn) {
+                setShowChoicePopover(true); // Show the choice popover
+              } else {
+                setShowCheckout(!showCheckout);
+              }
+            }}
             disabled={cart.length === 0}
             variant="default"
           >
