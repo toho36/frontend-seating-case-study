@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
 import Input from './ui/input';
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover'; // Adjust the import path as necessary
-
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 interface Props {
   onGuestCheckout: (guestInfo: {
     email: string;
@@ -25,7 +24,7 @@ const GuestCheckoutFormWithPopover: React.FC<Props> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onGuestCheckout({ email, firstName, lastName });
-    onClose(); // Close the popover on successful form submission
+    onClose();
   };
 
   if (!isOpen) return null;

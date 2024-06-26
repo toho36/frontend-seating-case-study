@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/popover.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import Input from './ui/input';
-import { login as apiLogin } from '@/lib/api'; // Import the login function
+import { login as apiLogin } from '@/lib/api';
 
 interface LoginResponse {
   message: string;
@@ -25,18 +25,18 @@ interface User {
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (user: User) => void; // Add this line
+  onLoginSuccess: (user: User) => void;
 }
 const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   onClose,
-  onLoginSuccess, // Add this line
+  onLoginSuccess,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const { mutate: login, isLoading } = useMutation(
-    () => apiLogin({ email, password }), // Use the imported login function
+    () => apiLogin({ email, password }),
     {
       onSuccess: (data) => {
         console.log('Login successful:', data);

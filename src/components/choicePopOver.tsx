@@ -1,7 +1,6 @@
 import React from 'react';
-import { Button } from './ui/button'; // Adjust the import path as necessary
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover'; // Adjust the import path as necessary
-
+import { Button } from './ui/button';
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 interface ChoicePopoverProps {
   onLogin: () => void;
   onGuest: () => void;

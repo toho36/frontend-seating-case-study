@@ -69,7 +69,6 @@ function App() {
     firstName: string;
     lastName: string;
   }) => {
-    console.log('Guest Info:', guestInfo);
     setShowGuestCheckoutForm(false);
     setShowCheckout(true);
   };
@@ -92,7 +91,7 @@ function App() {
       staleTime: Infinity,
     }
   );
-  console.log(eventDetails?.eventId, 'eventID');
+
   const sortedSeatRows = eventTickets?.seatRows.sort(
     (a, b) => a.seatRow - b.seatRow
   );
@@ -104,13 +103,11 @@ function App() {
     setIsLoggedIn(true);
     setUser(user);
     setShowLoginModal(false);
-    console.log('Logged in as:', user);
   };
 
   if (isTicketsLoading) {
     return <div>Loading...</div>;
   }
-  console.log(sortedSeatRows);
   const handleCartChange = (
     seat: SeatInfo | undefined,
     add: boolean,
@@ -124,8 +121,6 @@ function App() {
     );
     const name = ticketType?.name;
     const price = ticketType?.price;
-    console.log(name, 'name');
-    console.log(price, 'name');
     setCart((prev) => {
       if (add) {
         const newCartItem: CartItem = {
@@ -157,15 +152,17 @@ function App() {
   return (
     <div className="flex flex-col grow">
       {/* header (wrapper) */}
-      <nav className="sticky top-0 left-0 right-0 bg-white border-b border-zinc-200 flex justify-center">
+      <nav className="sticky top-0 left-0 right-0 bg-white border-b border-zinc-200 flex justify-center flex-wrap">
         {/* inner content */}
-        <div className="max-w-screen-lg p-4 grow flex items-center justify-between gap-3">
+        <div className="max-w-screen-lg p-4 grow flex flex-col md:flex-row items-center justify-between gap-3">
           {/* application/author image/logo placeholder */}
           <div className="max-w-[250px] w-full flex">
             <div className="bg-zinc-100 rounded-md size-12" />
           </div>
           {/* app/author title/name placeholder */}
-          <div className="bg-zinc-100 rounded-md h-8 w-[200px]" />
+          <div className="bg-zinc-100 rounded-md h-8 w-[200px] flex items-center justify-center">
+            <p className="text-xl text-zinc-900 font-semibold">To Hoang Viet</p>
+          </div>
           {/* user menu */}
           <div className="max-w-[250px] w-full flex justify-end">
             {isLoggedIn && user ? (
@@ -217,7 +214,7 @@ function App() {
       <main className="grow flex flex-col justify-center">
         {/* inner content */}
 
-        <div className="max-w-screen-lg m-auto p-4 flex items-start grow gap-3 w-full">
+        <div className="max-w-screen-lg m-auto p-4 flex flex-col md:flex-row items-start grow gap-3 w-full">
           {/* seating card */}
           <div className="bg-white rounded-md grow p-4 shadow-sm flex flex-col">
             {/*	seating map */}
@@ -274,12 +271,16 @@ function App() {
 
           <aside className="w-full max-w-sm bg-white rounded-md shadow-sm p-3 flex flex-col gap-2">
             {/* event header image */}
-            <div className="bg-zinc-100 rounded-md h-32">
-              <img src={eventDetails?.headerImageUrl} alt="Event header" />
+            <div className="bg-zinc-100 rounded-md h-32 w-full overflow-hidden">
+              <img
+                src={eventDetails?.headerImageUrl}
+                alt="Event header"
+                className="w-full h-full object-cover"
+              />
             </div>
 
             {/* event name */}
-            <h1 className="text-xl text-zinc-900 font-semibold">
+            <h1 className="text-xl text-zinc-900 font-semibold pt-4 md:pt-6 ">
               {eventDetails?.namePub}
             </h1>
             {/* event description */}
