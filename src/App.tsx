@@ -19,7 +19,7 @@ import { useQuery } from 'react-query';
 import { fetchEventDetails, fetchEventTickets } from './lib/api';
 import { EventDetails, EventTickets } from './lib/api';
 import { useState } from 'react';
-import LoginModal from './components/login'; // Import the LoginModal component
+import LoginModal from './components/login';
 import CheckoutPopover from './components/ui/checkoutPopover';
 import GuestCheckoutForm from './components/guestCheckoutForm';
 import ChoicePopover from './components/choicePopOver';
@@ -33,30 +33,29 @@ interface CartItem {
   isInCart: boolean;
   seatId?: string;
   ticketTypeId?: string;
-  row: number; // Added row index
+  row: number;
   place: number;
-  name?: string; // New
-  price?: number; // New
+  name?: string;
+  price?: number;
 }
 interface SeatInfo {
   seatId: string;
   place: number;
   ticketTypeId: string;
-  name?: string; // New
-  price?: number; // New
+  name?: string;
+  price?: number;
 }
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
-  const [showLoginModal, setShowLoginModal] = useState(false); // State to manage login modal visibility
-  const [user, setUser] = useState<User | null>(null); // State to store user data
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
-  const [cart, setCart] = useState<CartItem[]>([]); // State to track seats in the cart
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
 
   const [showGuestCheckoutForm, setShowGuestCheckoutForm] = useState(false);
   const [showChoicePopover, setShowChoicePopover] = useState(false);
 
-  // Function to toggle the login modal
   const toggleLoginModal = () => setShowLoginModal(!showLoginModal);
   const toggleChoicePopover = () => setShowChoicePopover(!showChoicePopover);
   const toggleGuestCheckoutForm = () =>
@@ -70,9 +69,9 @@ function App() {
     firstName: string;
     lastName: string;
   }) => {
-    console.log('Guest Info:', guestInfo); // You can use this info as needed
-    setShowGuestCheckoutForm(false); // Hide guest form
-    setShowCheckout(true); // Show checkout
+    console.log('Guest Info:', guestInfo);
+    setShowGuestCheckoutForm(false);
+    setShowCheckout(true);
   };
 
   const {
@@ -90,7 +89,7 @@ function App() {
     () => fetchEventTickets(eventDetails?.eventId || ''),
     {
       enabled: !!eventDetails,
-      staleTime: Infinity, // Add this line
+      staleTime: Infinity,
     }
   );
   console.log(eventDetails?.eventId, 'eventID');
@@ -101,7 +100,6 @@ function App() {
     row.seats.sort((a, b) => a.place - b.place);
   });
 
-  // Function to handle successful login
   const handleLoginSuccess = (user: User) => {
     setIsLoggedIn(true);
     setUser(user);
@@ -113,7 +111,6 @@ function App() {
     return <div>Loading...</div>;
   }
   console.log(sortedSeatRows);
-  // Function to handle adding/removing seats from cart
   const handleCartChange = (
     seat: SeatInfo | undefined,
     add: boolean,
@@ -146,7 +143,7 @@ function App() {
       }
     });
   };
-  // Calculate the maximum number of rows and places
+
   const maxRows =
     sortedSeatRows?.reduce((max, row) => Math.max(max, row.seatRow), 0) || 0;
   const maxPlaces =
@@ -154,7 +151,7 @@ function App() {
       (max, row) => Math.max(max, ...row.seats.map((seat) => seat.place)),
       0
     ) || 0;
-  // Calculate total price
+
   const totalPrice = cart.reduce((total, item) => total + (item.price || 0), 0);
 
   return (

@@ -5,7 +5,7 @@ import {
   PopoverContent,
 } from '@/components/ui/popover.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { createOrder } from '@/lib/api'; // Import the createOrder function
+import { createOrder } from '@/lib/api';
 
 interface OrderConfirmation {
   message: string;
@@ -19,7 +19,7 @@ interface Ticket {
   price: number;
   row: number;
   place: number;
-  ticketTypeId: string; // Add ticketTypeId to the Ticket interface
+  ticketTypeId: string;
 }
 interface User {
   email: string;
@@ -31,8 +31,8 @@ interface CheckoutPopoverProps {
   tickets: Ticket[];
   onRemove: (seatId: string) => void;
   onClose: () => void;
-  user?: User; // Add user prop
-  eventId: string; // Add eventId prop
+  user?: User;
+  eventId: string;
 }
 
 const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
@@ -59,11 +59,10 @@ const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
       user,
     };
     const confirmation = await createOrder(orderData);
-    setOrderConfirmation(confirmation); // Store the order confirmation data
+    setOrderConfirmation(confirmation);
   };
 
   return orderConfirmation ? (
-    // Render the order confirmation popover
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div className="bg-white p-4 rounded-lg shadow-lg">
         <h3 className="text-lg font-semibold">Order Confirmation</h3>
@@ -92,7 +91,6 @@ const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
       </div>
     </div>
   ) : (
-    // Render the ticket selection popover
     <Popover open={isOpen}>
       <PopoverTrigger>
         <PopoverContent className="p-2 bg-white rounded-md shadow-lg">

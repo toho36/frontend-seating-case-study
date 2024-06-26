@@ -19,8 +19,8 @@ interface SeatProps extends React.HTMLAttributes<HTMLElement> {
   place: number;
   className?: string;
   row: number;
-  isInCart: boolean; // Added type for isInCart
-  onCartChange: (seat: SeatProps['seat'], add: boolean) => void; // Added type for onCartChange
+  isInCart: boolean;
+  onCartChange: (seat: SeatProps['seat'], add: boolean) => void;
 }
 
 export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
@@ -28,7 +28,6 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
     const { seat, status, place, row, isInCart, onCartChange, name, price } =
       props;
 
-    // Change color based on availability and cart status
     const color = isInCart
       ? 'orange'
       : status === 'available'
@@ -36,7 +35,7 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
       : 'lightgrey';
 
     const toggleCart = () => {
-      onCartChange(seat, !isInCart); // Use onCartChange callback instead of local state
+      onCartChange(seat, !isInCart);
     };
     return (
       <Popover>
