@@ -64,33 +64,25 @@ function App() {
   const handleRemoveTicket = (seatId: string) => {
     setCart((prev) => prev.filter((ticket) => ticket.seatId !== seatId));
   };
-  const handleGuestCheckout = (guestInfo: {
-    email: string;
-    firstName: string;
-    lastName: string;
-  }) => {
+  const handleGuestCheckout = () => {
     setShowGuestCheckoutForm(false);
     setShowCheckout(true);
   };
 
-  const {
-    data: eventDetails,
-    isLoading,
-    error,
-  } = useQuery<EventDetails>('eventDetails', fetchEventDetails);
-
-  const {
-    data: eventTickets,
-    isLoading: isTicketsLoading,
-    error: ticketsError,
-  } = useQuery<EventTickets>(
-    ['eventTickets', eventDetails?.eventId || ''],
-    () => fetchEventTickets(eventDetails?.eventId || ''),
-    {
-      enabled: !!eventDetails,
-      staleTime: Infinity,
-    }
+  const { data: eventDetails } = useQuery<EventDetails>(
+    'eventDetails',
+    fetchEventDetails
   );
+
+  const { data: eventTickets, isLoading: isTicketsLoading } =
+    useQuery<EventTickets>(
+      ['eventTickets', eventDetails?.eventId || ''],
+      () => fetchEventTickets(eventDetails?.eventId || ''),
+      {
+        enabled: !!eventDetails,
+        staleTime: Infinity,
+      }
+    );
 
   const sortedSeatRows = eventTickets?.seatRows.sort(
     (a, b) => a.seatRow - b.seatRow
