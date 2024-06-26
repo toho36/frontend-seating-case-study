@@ -137,6 +137,8 @@ function App() {
           ticketTypeId: seat.ticketTypeId,
           row,
           place,
+          name,
+          price,
         };
         return [...prev, newCartItem];
       } else {
@@ -153,7 +155,8 @@ function App() {
       0
     ) || 0;
   // Calculate total price
-  const totalPrice = cart.length * 50;
+  const totalPrice = cart.reduce((total, item) => total + (item.price || 0), 0);
+
   return (
     <div className="flex flex-col grow">
       {/* header (wrapper) */}
@@ -330,7 +333,7 @@ function App() {
         isOpen={showCheckout}
         tickets={cart.map((item) => ({
           seatId: item.seatId as string,
-          price: 50, // Assuming a fixed price, adjust as necessary
+          price: item.price ?? 0, // Assuming a fixed price, adjust as necessary
           row: item.row,
           place: item.place,
           ticketTypeId: item.ticketTypeId as string, // Ensure ticketTypeId is included
