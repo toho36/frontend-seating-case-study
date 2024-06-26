@@ -32,6 +32,7 @@ interface User {
 interface CartItem {
   isInCart: boolean;
   seatId?: string;
+  ticketTypeId?: string;
   row: number; // Added row index
   place: number;
 }
@@ -88,7 +89,7 @@ function App() {
       staleTime: Infinity, // Add this line
     }
   );
-
+  console.log(eventDetails?.eventId, 'eventID');
   const sortedSeatRows = eventTickets?.seatRows.sort(
     (a, b) => a.seatRow - b.seatRow
   );
@@ -122,6 +123,7 @@ function App() {
         const newCartItem: CartItem = {
           isInCart: true,
           seatId: seat.seatId,
+          ticketTypeId: seat.ticketTypeId,
           row,
           place,
         };
@@ -309,12 +311,15 @@ function App() {
         isOpen={showCheckout}
         tickets={cart.map((item) => ({
           seatId: item.seatId as string,
-          price: 50,
+          price: 50, // Assuming a fixed price, adjust as necessary
           row: item.row,
           place: item.place,
+          ticketTypeId: item.ticketTypeId as string, // Ensure ticketTypeId is included
         }))}
         onRemove={handleRemoveTicket}
         onClose={() => setShowCheckout(false)}
+        user={user || { firstName: '', lastName: '', email: '' }}
+        eventId={eventDetails?.eventId || ''}
       />
 
       {/* bottom cart affix (wrapper) */}
