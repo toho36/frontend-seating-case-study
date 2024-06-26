@@ -101,10 +101,12 @@ const CheckoutPopover: React.FC<CheckoutPopoverProps> = ({
                 key={ticket.seatId}
                 className="flex justify-between items-center p-2 border-b"
               >
-                <span>
+                <span className="flex justify-between items-center p-1">
                   Row: {ticket.row}, Place: {ticket.place}
                 </span>
-                <span>{ticket.price} CZK</span>
+                <span className="flex justify-between items-center p-1 ">
+                  {ticket.price} CZK
+                </span>
                 <Button variant="ghost" onClick={() => onRemove(ticket.seatId)}>
                   Remove
                 </Button>

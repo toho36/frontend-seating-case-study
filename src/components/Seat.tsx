@@ -58,7 +58,7 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
                 Row: {row}, Place: {place}
               </p>
               {name && <p>Name: {name}</p>}
-              {price && <p>Price: ${price}</p>}
+              {price && <p>Price: {price} CZK</p>}
             </div>
 
             <footer className="flex flex-col">
