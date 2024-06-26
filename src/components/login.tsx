@@ -9,14 +9,14 @@ import { Button } from '@/components/ui/button.tsx';
 import Input from './ui/input';
 import { login as apiLogin } from '@/lib/api';
 
-interface LoginResponse {
-  message: string;
-  user: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-}
+// interface LoginResponse {
+//   message: string;
+//   user: {
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//   };
+// }
 interface User {
   firstName: string;
   lastName: string;
