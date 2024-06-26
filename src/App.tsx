@@ -35,11 +35,15 @@ interface CartItem {
   ticketTypeId?: string;
   row: number; // Added row index
   place: number;
+  name?: string; // New
+  price?: number; // New
 }
 interface SeatInfo {
   seatId: string;
   place: number;
   ticketTypeId: string;
+  name?: string; // New
+  price?: number; // New
 }
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
@@ -118,6 +122,13 @@ function App() {
   ) => {
     if (!seat) return;
 
+    const ticketType = eventTickets?.ticketTypes.find(
+      (t) => t.id === seat.ticketTypeId
+    );
+    const name = ticketType?.name;
+    const price = ticketType?.price;
+    console.log(name, 'name');
+    console.log(price, 'name');
     setCart((prev) => {
       if (add) {
         const newCartItem: CartItem = {
@@ -141,7 +152,6 @@ function App() {
       (max, row) => Math.max(max, ...row.seats.map((seat) => seat.place)),
       0
     ) || 0;
-
   // Calculate total price
   const totalPrice = cart.length * 50;
   return (
@@ -224,6 +234,13 @@ function App() {
                     (seat) => seat.place === placeIndex + 1
                   );
                   const isInCart = cart.some((s) => s.seatId === seat?.seatId);
+                  const ticketType = seat
+                    ? eventTickets?.ticketTypes.find(
+                        (t) => t.id === seat.ticketTypeId
+                      )
+                    : undefined;
+                  const name = ticketType?.name;
+                  const price = ticketType?.price;
                   return (
                     <Seat
                       key={seat?.seatId || `${rowIndex}-${placeIndex}`}
@@ -232,6 +249,8 @@ function App() {
                       status={seat ? 'available' : 'not-available'}
                       place={placeIndex + 1}
                       row={rowIndex + 1}
+                      name={name}
+                      price={price}
                       isInCart={isInCart}
                       onCartChange={(seatInfo, add) =>
                         handleCartChange(

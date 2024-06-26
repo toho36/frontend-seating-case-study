@@ -13,6 +13,8 @@ interface SeatProps extends React.HTMLAttributes<HTMLElement> {
     place: number;
     ticketTypeId: string;
   };
+  name?: string;
+  price?: number;
   status: 'available' | 'not-available';
   place: number;
   className?: string;
@@ -23,7 +25,8 @@ interface SeatProps extends React.HTMLAttributes<HTMLElement> {
 
 export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
   (props, ref) => {
-    const { seat, status, place, row, isInCart, onCartChange } = props; // Destructured new props
+    const { seat, status, place, row, isInCart, onCartChange, name, price } =
+      props;
 
     // Change color based on availability and cart status
     const color = isInCart
@@ -51,7 +54,13 @@ export const Seat = React.forwardRef<HTMLDivElement, SeatProps>(
         </PopoverTrigger>
         {status === 'available' && (
           <PopoverContent>
-            <pre>{JSON.stringify({ row, place }, null, 2)}</pre>
+            <div className="text-sm">
+              <p>
+                Row: {row}, Place: {place}
+              </p>
+              {name && <p>Name: {name}</p>}
+              {price && <p>Price: ${price}</p>}
+            </div>
 
             <footer className="flex flex-col">
               {isInCart ? (
